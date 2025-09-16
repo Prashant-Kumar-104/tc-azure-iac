@@ -407,7 +407,7 @@ bastion_host_info = [
 
 upload_to_storage_account_info = [
   {
-    name                     = "sadevspoke001"
+    name                     = "sadevspoke0017954"
     resource_group_name      = "rg-dev-spoke-001"
     account_tier             = "Standard"
     account_replication_type = "LRS"
@@ -419,7 +419,7 @@ upload_to_storage_account_info = [
 ]
 
 keyvault_info = {
-  name                = "kv-dev-spoke-001"
+  name                = "kv-dev-spoke-0017954"
   resource_group_name = "rg-dev-spoke-001"
   location            = "East US"
   sku_kv              = "standard"
@@ -453,7 +453,7 @@ windows_virtual_machine_info = [
     private_ip_address          = "10.2.1.5"
     user_assigned_identity_name = "vm-dev-web-001"
     key_vault_info = {
-      name                = "kv-dev-spoke-001"
+      name                = "kv-dev-spoke-0017954"
       secret_name         = "vm-admin-password"
       resource_group_name = "rg-dev-spoke-001"
     }
@@ -488,7 +488,7 @@ windows_virtual_machine_info = [
     private_ip_address          = "10.2.2.5"
     user_assigned_identity_name = "vm-dev-ent-001"
     key_vault_info = {
-      name                = "kv-dev-spoke-001"
+      name                = "kv-dev-spoke-0017954"
       secret_name         = "vm-admin-password"
       resource_group_name = "rg-dev-spoke-001"
     }
@@ -523,7 +523,7 @@ windows_virtual_machine_info = [
     private_ip_address          = "10.2.2.6"
     user_assigned_identity_name = "vm-dev-ent-002"
     key_vault_info = {
-      name                = "kv-dev-spoke-001"
+      name                = "kv-dev-spoke-0017954"
       secret_name         = "vm-admin-password"
       resource_group_name = "rg-dev-spoke-001"
     }
@@ -910,7 +910,7 @@ windows_virtual_machine_info = [
 
 storage_account_with_ep_info = [
   {
-    name                     = "devlabfileshare01" #vcloudlabfileshare01
+    name                     = "devlabfileshare017954" #vcloudlabfileshare01
     resource_group_name      = "rg-dev-spoke-001"
     account_kind             = "StorageV2"
     account_tier             = "Standard"
