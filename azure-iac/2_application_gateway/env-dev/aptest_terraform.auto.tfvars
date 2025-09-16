@@ -296,7 +296,7 @@ application_gateway_info = [
 
     #next_hop_in_ip_address = "10.13.18.71" #HUB firewal IP
     key_vault_info = {
-      name             = "kv-dev-spoke-001"
+      name             = "kv-dev-spoke-0017954"
       certificate_name = "testcert"
     }
     certificate_name               = "testcert"
