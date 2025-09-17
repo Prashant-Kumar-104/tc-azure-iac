@@ -176,22 +176,7 @@ variable "url_path_map" {
   }))
 }
 
-# variable "diagnostic_log_analytics_workspaces" {
-#   description = <<-EOT
-#     (Optional) list of Log Analytics Workspace IDs and log categories to store diagnostic logs (if empty, storing diagnostic logs to Log Analytics Workspace is disabled):
-#       id: ID of the Log Analytics Workspace.
-#       ApplicationGatewayAccessLog: Flag indicating whether the ApplicationGatewayAccessLog are sent or not (if false, ApplicationGatewayAccessLog are not sent).
-#       ApplicationGatewayPerformanceLog: Flag indicating whether the ApplicationGatewayPerformanceLog are sent or not (if false, ApplicationGatewayPerformanceLog are not sent).
-#       ApplicationGatewayFirewallLog: Flag indicating whether the ApplicationGatewayFirewallLog are sent or not (if false, ApplicationGatewayFirewallLog are not sent).
-#   EOT
-#   type = list(object({
-#     id                               = string
-#     ApplicationGatewayAccessLog      = bool
-#     ApplicationGatewayPerformanceLog = bool
-#     ApplicationGatewayFirewallLog    = bool
-#   }))
-#   //Enforce storing diagnostic logs in Log Analytics Workspace
-# }
+
 
 variable "vm_nic" {
   description = "Map of virtual machine NICs."
@@ -201,17 +186,7 @@ variable "vm_nic" {
   }))
 }
 
-# variable "log_analytics_storage_account_id" {
-#   description = "ID of the Storage Account for the Log Analytics Workspace."
-#   type        = string
-#   default     = null
-# }
 
-# variable "log_analytics_nsg_diag_categories" {
-#   description = "NSG Monitoring Category details for Azure Diagnostic settings."
-#   type        = list(string)
-#   default     = ["NetworkSecurityGroupEvent", "NetworkSecurityGroupRuleCounter"]
-# }
 
 variable "sku" {
   description = "SKU of the application gateway"
@@ -248,6 +223,38 @@ variable "encrypted_certificate_password" {
   type        = string
 
 }
+
+
+# variable "diagnostic_log_analytics_workspaces" {
+#   description = <<-EOT
+#     (Optional) list of Log Analytics Workspace IDs and log categories to store diagnostic logs (if empty, storing diagnostic logs to Log Analytics Workspace is disabled):
+#       id: ID of the Log Analytics Workspace.
+#       ApplicationGatewayAccessLog: Flag indicating whether the ApplicationGatewayAccessLog are sent or not (if false, ApplicationGatewayAccessLog are not sent).
+#       ApplicationGatewayPerformanceLog: Flag indicating whether the ApplicationGatewayPerformanceLog are sent or not (if false, ApplicationGatewayPerformanceLog are not sent).
+#       ApplicationGatewayFirewallLog: Flag indicating whether the ApplicationGatewayFirewallLog are sent or not (if false, ApplicationGatewayFirewallLog are not sent).
+#   EOT
+#   type = list(object({
+#     id                               = string
+#     ApplicationGatewayAccessLog      = bool
+#     ApplicationGatewayPerformanceLog = bool
+#     ApplicationGatewayFirewallLog    = bool
+#   }))
+#   //Enforce storing diagnostic logs in Log Analytics Workspace
+# }
+
+
+# variable "log_analytics_storage_account_id" {
+#   description = "ID of the Storage Account for the Log Analytics Workspace."
+#   type        = string
+#   default     = null
+# }
+
+# variable "log_analytics_nsg_diag_categories" {
+#   description = "NSG Monitoring Category details for Azure Diagnostic settings."
+#   type        = list(string)
+#   default     = ["NetworkSecurityGroupEvent", "NetworkSecurityGroupRuleCounter"]
+# }
+
 
 # variable "virtual_machines" {
 #   description = "List of virtual machine private IP addresses to add to the backend pool"

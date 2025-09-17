@@ -1,23 +1,23 @@
 module "application_gateway" {
-  source                         = "../modules/applicationgateway"
-  for_each                       = { for applicationgateway in var.application_gateway_info : applicationgateway.name => applicationgateway }
-  name                           = each.value.name
-  resource_group_name            = each.value.resource_group_name
-  location                       = each.value.location
-  public_ip_allocation_method    = each.value.public_ip_allocation_method
-  public_ip_sku_appg             = each.value.public_ip_sku_appg
-  private_ip                     = each.value.private_ip
-  zones                          = each.value.zones
-  network_info                   = each.value.network_info
-  sku                            = each.value.sku
-  frontend_port                  = each.value.frontend_port
-  backend_address_pool           = each.value.backend_address_pool
-  vm_nic                         = each.value.vm_nic
-  backend_http_settings          = each.value.backend_http_settings
-  http_listener                  = each.value.http_listener
-  request_routing_rule           = each.value.request_routing_rule
-  probe                          = each.value.probe
-  url_path_map                   = each.value.url_path_map
+  source                      = "../modules/applicationgateway"
+  for_each                    = { for applicationgateway in var.application_gateway_info : applicationgateway.name => applicationgateway }
+  name                        = each.value.name
+  resource_group_name         = each.value.resource_group_name
+  location                    = each.value.location
+  public_ip_allocation_method = each.value.public_ip_allocation_method
+  public_ip_sku_appg          = each.value.public_ip_sku_appg
+  private_ip                  = each.value.private_ip
+  zones                       = each.value.zones
+  network_info                = each.value.network_info
+  sku                         = each.value.sku
+  frontend_port               = each.value.frontend_port
+  backend_address_pool        = each.value.backend_address_pool
+  vm_nic                      = each.value.vm_nic
+  backend_http_settings       = each.value.backend_http_settings
+  http_listener               = each.value.http_listener
+  request_routing_rule        = each.value.request_routing_rule
+  probe                       = each.value.probe
+  url_path_map                = each.value.url_path_map
   # nsg_rules                      = each.value.nsg_rules
   key_vault_info                 = each.value.key_vault_info
   certificate_name               = each.value.certificate_name

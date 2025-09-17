@@ -1,6 +1,6 @@
 application_gateway_info = [
   {
-    name                        = "rg-dev-appgw-001"
+    name                        = "dev-001"
     resource_group_name         = "rg-dev-spoke-001"
     location                    = "East US"
     public_ip_allocation_method = "Static"
@@ -9,7 +9,7 @@ application_gateway_info = [
     zones                       = [1, 2, 3]
 
     network_info = {
-      subnet_name          = "ApplicationGatewaySubnet"
+      subnet_name          = "subnet-appgw-001"
       virtual_network_name = "vnet-dev-spoke-001"
     }
 
@@ -44,9 +44,9 @@ application_gateway_info = [
       }
     ]
     vm_nic = {
-      tcda001 = { network_interface_name = "nic-vm-dev-ent-001", backend_pool_name = "backendpool-ent-tcda001" },
-      tcdv001 = { network_interface_name = "nic-vm-dev-ent-002", backend_pool_name = "backendpool-ent-tcdv001" },
-      tcdw001 = { network_interface_name = "nic-vm-dev-web-001", backend_pool_name = "backendpool-web-tcdw001" }
+      tcda001 = { network_interface_name = "nic-vm-dev-tcda001", backend_pool_name = "backendpool-ent-tcda001" },
+      tcdv001 = { network_interface_name = "nic-vm-dev-tcdv001", backend_pool_name = "backendpool-ent-tcdv001" },
+      tcdw001 = { network_interface_name = "nic-vm-dev-tcdw001", backend_pool_name = "backendpool-web-tcdw001" }
     }
 
     backend_http_settings = [
@@ -59,7 +59,7 @@ application_gateway_info = [
         request_timeout = 7200
         #probe_name                          = "appgw-backendpool-tc" -- need to update here
         pick_host_name_from_backend_address = false
-        #host_name                           = "10.124.28.197" # webtier host of tomcat
+        #host_name                           = "10.0.0.197" # webtier host of tomcat
       },
       {
         name                  = "tcawc"
@@ -70,7 +70,7 @@ application_gateway_info = [
         request_timeout = 7200
         #probe_name                          = "appgw-backendpool-aw"
         pick_host_name_from_backend_address = false
-        #host_name                           = "10.124.28.213" # awc server of tc
+        #host_name                           = "10.0.0.213" # awc server of tc
 
       },
 
@@ -81,33 +81,33 @@ application_gateway_info = [
         port                  = 4544
         protocol              = "Http"
         request_timeout       = 14000
-        #host_name                           = "10.124.28.214" # vol server of tc
+        #host_name                           = "10.0.0.214" # vol server of tc
         pick_host_name_from_backend_address = false
         probe_name                          = "appgw-backendpool-aw"
         #pick_host_name_from_backend_address = true    
         #  override_with_specific_domain_name  = number  ##############################  need to verify before apply
       },
-      {
-        name                  = "tcvisadmin"
-        cookie_based_affinity = "Disabled"
-        #path                                = "/"
-        port            = 8089
-        protocol        = "Http"
-        request_timeout = 180
-        #host_name                           = "10.124.28.213" # vol server of tc
-        pick_host_name_from_backend_address = false
-      },
+      #{
+      #   name                  = "tcvisadmin"
+      #   cookie_based_affinity = "Disabled"
+      #   #path                                = "/"
+      #   port            = 8089
+      #   protocol        = "Http"
+      #   request_timeout = 180
+      #   #host_name                           = "10.0.0.213" # vol server of tc
+      #   pick_host_name_from_backend_address = false
+      # },
 
-      {
-        name                  = "tcvisassigner"
-        cookie_based_affinity = "Disabled"
-        #path                                = "/"
-        port            = 3000
-        protocol        = "Http"
-        request_timeout = 60
-        #host_name                           = "10.124.28.213" # vol server of tc
-        pick_host_name_from_backend_address = false
-      }
+      # {
+      #   name                  = "tcvisassigner"
+      #   cookie_based_affinity = "Disabled"
+      #   #path                                = "/"
+      #   port            = 3000
+      #   protocol        = "Http"
+      #   request_timeout = 60
+      #   #host_name                           = "10.0.0.213" # vol server of tc
+      #   pick_host_name_from_backend_address = false
+      # }
     ]
 
     http_listener = [
@@ -118,8 +118,9 @@ application_gateway_info = [
       #   protocol                       = "Http"
       # ssl_certificate_name = null },
       {
-        name                           = "appgw-backendpool-https"
-        frontend_ip_configuration_name = "fip-pvip-appgw-rg-dev-appgw-001"
+        name = "appgw-listener-https"
+        #frontend_ip_configuration_name = "fip-pvip-appgw-dev-001"   # Private IP associated with the appgw -- see appgw name aswell.
+        frontend_ip_configuration_name = "fip-pip-appgw-dev-001" # Public IP associated with the appgw
         frontend_port_name             = "port443"
         protocol                       = "Https"
         ssl_certificate_name           = "testcert"
@@ -129,7 +130,7 @@ application_gateway_info = [
       {
         name                       = "appgw-backendpool-routing"
         rule_type                  = "PathBasedRouting"
-        http_listener_name         = "appgw-backendpool-https"
+        http_listener_name         = "appgw-listener-https"
         backend_address_pool_name  = "backendpool-ent-tcda001"
         backend_http_settings_name = "tcawc"
         url_path_map_name          = "path-map-1"
@@ -145,7 +146,7 @@ application_gateway_info = [
         timeout                                   = 30
         unhealthy_threshold                       = 3
         pick_host_name_from_backend_http_settings = false
-        host                                      = "10.124.28.214"
+        host                                      = "10.2.2.6"
         match = {
           status_code = ["200-400"]
           body        = "HTTP ERROR 400 MISSING_TICKET_0"
@@ -226,18 +227,18 @@ application_gateway_info = [
             backend_address_pool_name  = "backendpool-ent-tcda001"
             backend_http_settings_name = "tcawc"
           },
-          {
-            name                       = "visadmin"
-            paths                      = ["/VisProxyServlet/admin*"]
-            backend_address_pool_name  = "backendpool-ent-tcdv001"
-            backend_http_settings_name = "tcvisadmin"
-          },
-          {
-            name                       = "visproxy"
-            paths                      = ["/VisProxyServlet*"]
-            backend_address_pool_name  = "backendpool-ent-tcdv001"
-            backend_http_settings_name = "tcvisadmin"
-          }
+          # {
+          #   name                       = "visadmin"
+          #   paths                      = ["/VisProxyServlet/admin*"]
+          #   backend_address_pool_name  = "backendpool-ent-tcdv001"
+          #   backend_http_settings_name = "tcvisadmin"
+          # },
+          # {
+          #   name                       = "visproxy"
+          #   paths                      = ["/VisProxyServlet*"]
+          #   backend_address_pool_name  = "backendpool-ent-tcdv001"
+          #   backend_http_settings_name = "tcvisadmin"
+          # }
         ]
       }
     ]
@@ -300,7 +301,7 @@ application_gateway_info = [
       certificate_name = "testcert"
     }
     certificate_name               = "testcert"
-    encrypted_certificate_password = "WW91clBhc3N3b3Jk" # Base64 encoded password "YourPassword"
+    encrypted_certificate_password = "WW91clBhc3N3b3Jk" # Base64 encoded password 
 
 
     user_assigned_identity_info = {

@@ -1,5 +1,5 @@
 resource "azurerm_public_ip" "gateway_ip" {
-  name                = "${var.name}-pip-appgw"
+  name                = "pip-appgw-${var.name}"
   resource_group_name = var.resource_group_name
   location            = var.location
   allocation_method   = var.public_ip_allocation_method
@@ -7,75 +7,10 @@ resource "azurerm_public_ip" "gateway_ip" {
   zones               = var.zones
 }
 
-# resource "azurerm_subnet" "appgw_subnet" {
-#   name                 = var.subnet_name
-#   resource_group_name  = var.resource_group_name
-#   virtual_network_name = var.virtual_network_name
-#   address_prefixes     = var.address_prefixes
-# }
-
-# resource "azurerm_network_security_group" "appgw_nsg" {
-#   name                = "${var.name}-nsg-appgw"
-#   location            = var.location
-#   resource_group_name = var.resource_group_name
-
-#   dynamic "security_rule" {
-#     for_each = var.nsg_rules
-#     content {
-#       name                         = security_rule.value.name
-#       priority                     = security_rule.value.priority
-#       direction                    = security_rule.value.direction
-#       access                       = security_rule.value.access
-#       protocol                     = security_rule.value.protocol
-#       source_port_range            = security_rule.value.source_port_range
-#       destination_port_range       = security_rule.value.destination_port_range
-#       source_address_prefix        = security_rule.value.source_address_prefix
-#       destination_address_prefix   = security_rule.value.destination_address_prefix
-#       source_address_prefixes      = security_rule.value.source_address_prefixes
-#       destination_address_prefixes = security_rule.value.destination_address_prefixes
-#       source_port_ranges           = security_rule.value.source_port_ranges
-#       destination_port_ranges      = security_rule.value.destination_port_ranges
-
-#     }
-#   }
-# }
-
-# resource "azurerm_subnet_network_security_group_association" "appgw_nsg_association" {
-#   subnet_id                 = data.azurerm_subnet.appgw_subnet_info.id
-#   network_security_group_id = azurerm_network_security_group.appgw_nsg.id
-# }
-
-# resource "azurerm_route_table" "gatewayrt" {
-#   name                          = "${var.name}-rt-appgw"
-#   location                      = var.location
-#   resource_group_name           = var.resource_group_name
-#   bgp_route_propagation_enabled = true
-#   # depends_on = [
-#   #   azurerm_subnet.appgw_subnet
-#   # ]
-
-#   dynamic "route" {
-#     for_each = var.route
-
-#     content {
-#       name                   = route.value.name
-#       address_prefix         = route.value.address_prefix
-#       next_hop_type          = "VirtualAppliance"
-#       next_hop_in_ip_address = var.next_hop_in_ip_address
-#     }
-#   }
-#   tags = {
-#     environment = "Production"
-#   }
-# }
-
-# resource "azurerm_subnet_route_table_association" "appgw_rt" {
-#   subnet_id      = data.azurerm_subnet.appgw_subnet_info.id
-#   route_table_id = azurerm_route_table.gatewayrt.id
-# }
 
 resource "azurerm_user_assigned_identity" "appgw_identity" {
-  name                = "${var.name}-uai-appgw"
+  name                = "uai-appgw-${var.name}"
+  #name                = "uai-appgw-dev-001"
   resource_group_name = var.resource_group_name
   location            = var.location
 }
@@ -128,7 +63,7 @@ resource "azurerm_application_gateway" "appgw" {
     azurerm_role_assignment.kv_certificate_role_assignment,
     azurerm_role_assignment.kv_secrets_role_assignment
   ]
-  name                = "${var.name}-appgw"
+  name                = "appgw-${var.name}"
   location            = var.location
   resource_group_name = var.resource_group_name
   zones               = var.zones
@@ -146,10 +81,11 @@ resource "azurerm_application_gateway" "appgw" {
   }
 
   gateway_ip_configuration {
-    name      = "${var.name}-gw-ip-appgw"
+    name      = "appgw-ip-appgw-${var.name}"
     subnet_id = data.azurerm_subnet.appgw_subnet_info.id
   }
-
+  
+  # For Public IP
   frontend_ip_configuration {
     name                 = "fip-pip-appgw-${var.name}"
     public_ip_address_id = azurerm_public_ip.gateway_ip.id
@@ -263,6 +199,88 @@ resource "azurerm_application_gateway" "appgw" {
 }
 
 
+resource "azurerm_network_interface_application_gateway_backend_address_pool_association" "appgw_backend_association" {
+  for_each              = var.vm_nic
+  network_interface_id  = data.azurerm_network_interface.vm_nic[each.key].id
+  ip_configuration_name = "ipconfig1"         ##  default
+  #backend_address_pool_id = azurerm_application_gateway.appgw.backend_address_pool[0].id
+  backend_address_pool_id = one([
+    for pool in azurerm_application_gateway.appgw.backend_address_pool[*] : pool.id
+    if pool.name == each.value.backend_pool_name
+  ])
+}
+
+
+
+# resource "azurerm_subnet" "appgw_subnet" {
+#   name                 = var.subnet_name
+#   resource_group_name  = var.resource_group_name
+#   virtual_network_name = var.virtual_network_name
+#   address_prefixes     = var.address_prefixes
+# }
+
+# resource "azurerm_network_security_group" "appgw_nsg" {
+#   name                = "${var.name}-nsg-appgw"
+#   location            = var.location
+#   resource_group_name = var.resource_group_name
+
+#   dynamic "security_rule" {
+#     for_each = var.nsg_rules
+#     content {
+#       name                         = security_rule.value.name
+#       priority                     = security_rule.value.priority
+#       direction                    = security_rule.value.direction
+#       access                       = security_rule.value.access
+#       protocol                     = security_rule.value.protocol
+#       source_port_range            = security_rule.value.source_port_range
+#       destination_port_range       = security_rule.value.destination_port_range
+#       source_address_prefix        = security_rule.value.source_address_prefix
+#       destination_address_prefix   = security_rule.value.destination_address_prefix
+#       source_address_prefixes      = security_rule.value.source_address_prefixes
+#       destination_address_prefixes = security_rule.value.destination_address_prefixes
+#       source_port_ranges           = security_rule.value.source_port_ranges
+#       destination_port_ranges      = security_rule.value.destination_port_ranges
+
+#     }
+#   }
+# }
+
+# resource "azurerm_subnet_network_security_group_association" "appgw_nsg_association" {
+#   subnet_id                 = data.azurerm_subnet.appgw_subnet_info.id
+#   network_security_group_id = azurerm_network_security_group.appgw_nsg.id
+# }
+
+# resource "azurerm_route_table" "gatewayrt" {
+#   name                          = "${var.name}-rt-appgw"
+#   location                      = var.location
+#   resource_group_name           = var.resource_group_name
+#   bgp_route_propagation_enabled = true
+#   # depends_on = [
+#   #   azurerm_subnet.appgw_subnet
+#   # ]
+
+#   dynamic "route" {
+#     for_each = var.route
+
+#     content {
+#       name                   = route.value.name
+#       address_prefix         = route.value.address_prefix
+#       next_hop_type          = "VirtualAppliance"
+#       next_hop_in_ip_address = var.next_hop_in_ip_address
+#     }
+#   }
+#   tags = {
+#     environment = "Production"
+#   }
+# }
+
+# resource "azurerm_subnet_route_table_association" "appgw_rt" {
+#   subnet_id      = data.azurerm_subnet.appgw_subnet_info.id
+#   route_table_id = azurerm_route_table.gatewayrt.id
+# }
+
+
+
 # resource "azurerm_monitor_diagnostic_setting" "application_gateway" {
 #   count = length(var.diagnostic_log_analytics_workspaces)
 
@@ -283,16 +301,6 @@ resource "azurerm_application_gateway" "appgw" {
 #   }
 # }
 
-resource "azurerm_network_interface_application_gateway_backend_address_pool_association" "appgw_backend_association" {
-  for_each              = var.vm_nic
-  network_interface_id  = data.azurerm_network_interface.vm_nic[each.key].id
-  ip_configuration_name = "ipconfig1"
-  #backend_address_pool_id = azurerm_application_gateway.appgw.backend_address_pool[0].id
-  backend_address_pool_id = one([
-    for pool in azurerm_application_gateway.appgw.backend_address_pool[*] : pool.id
-    if pool.name == each.value.backend_pool_name
-  ])
-}
 
 # resource "azurerm_monitor_diagnostic_setting" "nsg_diagnostics" {
 #   count                      = length(var.diagnostic_log_analytics_workspaces)

@@ -1,4 +1,4 @@
-name: "IAC Terraform dev CI/CD Pipeline"
+name: "Azure Infrastructure (Terraform) development CI/CD pipeline for Teamcenter"
 
 on:
   workflow_dispatch:
@@ -171,6 +171,9 @@ jobs:
       - name: "Terraform Apply"
         working-directory: ${{ env.WORKING_DIR }}/2_application_gateway/env-dev
         run: terraform apply "tfplan"
+
+
+ ############################################################################
 
   # deploy-sql:
   #   name: "Deploy SQL Instances"

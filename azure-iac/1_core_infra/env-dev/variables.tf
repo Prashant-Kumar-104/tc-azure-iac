@@ -56,15 +56,15 @@ variable "vnet_peering_info" {
   }))
 }
 
-variable "bastion_host_info" {
-  description = "Information about the bastion host"
-  type = list(object({
-    name                 = string
-    resource_group_name  = string
-    virtual_network_name = string
-    tags                 = map(string)
-  }))
-}
+# variable "bastion_host_info" {
+#   description = "Information about the bastion host"
+#   type = list(object({
+#     name                 = string
+#     resource_group_name  = string
+#     virtual_network_name = string
+#     tags                 = map(string)
+#   }))
+# }
 
 variable "upload_to_storage_account_info" {
   description = "Information about the upload to storage account"

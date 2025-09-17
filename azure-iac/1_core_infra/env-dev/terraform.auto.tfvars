@@ -40,55 +40,23 @@ virtual_network_info = [
 
 subnet_info = [
   {
-    name                 = "snet-hubvnet001-hub-fw-001"
+    name                 = "subnet-hub-fw-001"
     virtual_network_name = "vnet-dev-hub-001"
     address_space        = ["10.1.1.0/24"]
     location             = "eastus"
     nsg_rules = [
       {
-        name                       = "AllowAppgatewayInbound"
+        name                       = "Allow-Inbound-Internal-Traffic"
         priority                   = 100
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
         source_port_range          = "*"
-        destination_port_range     = "65200-65535"
-        source_address_prefix      = "GatewayManager"
-        destination_address_prefix = "*"
-      },
-      {
-        name                       = "AllowAppgatewayOutbound"
-        priority                   = 100
-        direction                  = "Outbound"
-        access                     = "Allow"
-        protocol                   = "Tcp"
-        source_port_range          = "*"
-        destination_port_range     = "65200-65535"
+        destination_port_range     = "*"
         source_address_prefix      = "*"
         destination_address_prefix = "*"
       },
-      {
-        name                       = "App-GW-Inbound-Https"
-        priority                   = 101
-        direction                  = "Inbound"
-        access                     = "Allow"
-        protocol                   = "Tcp"
-        source_port_range          = "*"
-        destination_port_range     = "443"
-        source_address_prefix      = "*"
-        destination_address_prefix = "*"
-      },
-      {
-        name                       = "App-GW-Inbound-Custom-Ports"
-        priority                   = 102
-        direction                  = "Inbound"
-        access                     = "Allow"
-        protocol                   = "Tcp"
-        source_port_range          = "*"
-        destination_port_ranges    = ["8089", "30066", "30077", "8090"]
-        source_address_prefix      = "*"
-        destination_address_prefix = "*"
-      }
+
     ]
     tags = {
       environment = "dev"
@@ -96,14 +64,14 @@ subnet_info = [
     }
   },
   {
-    name                 = "snet-spokevnet001-web-tier-001"
+    name                 = "subnet-web-tier-001"
     virtual_network_name = "vnet-dev-spoke-001"
     address_space        = ["10.2.1.0/24"]
     location             = "eastus"
     nsg_rules = [
       {
         name                       = "Allow-RDP-Inbound"
-        priority                   = 100
+        priority                   = 200
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
@@ -113,49 +81,17 @@ subnet_info = [
         destination_address_prefix = "*"
       },
       {
-        name                       = "Allow-HTTP-Inbound"
-        priority                   = 101
+        name                       = "Allow-Inbound-Internal-Traffic"
+        priority                   = 201
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
-        source_port_range          = "*"
-        destination_port_range     = "80"
-        source_address_prefix      = "*"
-        destination_address_prefix = "*"
-      },
-      {
-        name                       = "Inbound-Traffic-TCP-Subnets"
-        priority                   = 102
-        direction                  = "Inbound"
-        access                     = "Allow"
-        protocol                   = "Tcp"
-        source_port_range          = "*"
-        source_address_prefixes    = ["10.124.28.64/26", "10.124.28.128/26", "10.124.28.208/28", "10.131.166.0/24"]
-        destination_address_prefix = "10.124.28.192/28"
-        destination_port_ranges    = ["7001", "8080", "30001", "1999", "2001", "443", "80", "22", "8088", "15389", "8083", "8082", "1433", "8983", "9090", "8086", "30066", "8090", "8089", "55566", "1433", "2888", "3888", "2181", "5000", "3000", "4544", "8443", "8086", "8087"]
-      },
-      {
-        name                       = "Allow-ICMP"
-        priority                   = 103
-        direction                  = "Inbound"
-        access                     = "Allow"
-        protocol                   = "Icmp"
         source_port_range          = "*"
         destination_port_range     = "*"
         source_address_prefix      = "*"
         destination_address_prefix = "*"
-      },
-      {
-        name                       = "Inbound-Traffic-UDP-Subnets"
-        priority                   = 104
-        direction                  = "Inbound"
-        access                     = "Allow"
-        protocol                   = "Udp"
-        source_port_range          = "*"
-        source_address_prefixes    = ["10.124.28.208/28"]
-        destination_address_prefix = "10.124.28.192/28"
-        destination_port_ranges    = ["29000", "28001", "3000", "4544", "8087", "30002", "30077", "57093"]
       }
+
     ]
     tags = {
       environment = "dev"
@@ -163,14 +99,14 @@ subnet_info = [
     }
   },
   {
-    name                 = "snet-spokevnet001-ent-tier-001"
+    name                 = "subnet-ent-tier-001"
     virtual_network_name = "vnet-dev-spoke-001"
     address_space        = ["10.2.2.0/24"]
     location             = "eastus"
     nsg_rules = [
       {
         name                       = "Allow-RDP-Inbound"
-        priority                   = 100
+        priority                   = 300
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
@@ -180,50 +116,17 @@ subnet_info = [
         destination_address_prefix = "*"
       },
       {
-        name                       = "Allow-HTTPS-Inbound"
-        priority                   = 101
+        name                       = "Allow-Inbound-Internal-Traffic"
+        priority                   = 301
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
-        source_port_range          = "*"
-        destination_port_range     = "80"
-        source_address_prefix      = "*"
-        destination_address_prefix = "*"
-      },
-      {
-        name                       = "Inbound-Traffic-TCP-Subnets"
-        priority                   = 102
-        direction                  = "Inbound"
-        access                     = "Allow"
-        protocol                   = "Tcp"
-        source_port_range          = "*"
-        source_address_prefixes    = ["10.124.28.64/26", "10.124.28.128/26", "10.124.28.192/28", "10.131.166.0/24"]
-        destination_address_prefix = "10.124.28.208/28"
-        destination_port_ranges = ["7001", "8080", "30001", "1999", "2001", "443", "80", "22", "8088", "15389", "8083", "8082", "1433", "8983", "9090", "8086", "30066", "8090", "8089", "55566", "1433", "2888", "3888", "2181", "5000", "3000", "4544", "8443", "8086", "8087"
-        ]
-      },
-      {
-        name                       = "Allow-ICMP"
-        priority                   = 103
-        direction                  = "Inbound"
-        access                     = "Allow"
-        protocol                   = "Icmp"
         source_port_range          = "*"
         destination_port_range     = "*"
         source_address_prefix      = "*"
         destination_address_prefix = "*"
-      },
-      {
-        name                       = "Inbound-Traffic-UDP-Subnets"
-        priority                   = 104
-        direction                  = "Inbound"
-        access                     = "Allow"
-        protocol                   = "Udp"
-        source_port_range          = "*"
-        source_address_prefixes    = ["10.124.28.192/28"]
-        destination_address_prefix = "10.124.28.208/28"
-        destination_port_ranges    = ["29000", "28001", "3000", "4544", "8087", "30002", "30077", "57093"]
       }
+
     ]
     tags = {
       environment = "dev"
@@ -231,55 +134,23 @@ subnet_info = [
     }
   },
   {
-    name                 = "snet-spokevnet001-pvendpoint-001"
+    name                 = "subnet-pvendpoint-001"
     virtual_network_name = "vnet-dev-spoke-001"
     address_space        = ["10.2.3.0/24"]
     location             = "eastus"
     nsg_rules = [
       {
-        name                       = "AllowAppgatewayInbound"
-        priority                   = 100
+        name                       = "Allow-Inbound-Internal-Traffic"
+        priority                   = 400
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
         source_port_range          = "*"
-        destination_port_range     = "65200-65535"
-        source_address_prefix      = "GatewayManager"
-        destination_address_prefix = "*"
-      },
-      {
-        name                       = "AllowAppgatewayOutbound"
-        priority                   = 100
-        direction                  = "Outbound"
-        access                     = "Allow"
-        protocol                   = "Tcp"
-        source_port_range          = "*"
-        destination_port_range     = "65200-65535"
-        source_address_prefix      = "*"
-        destination_address_prefix = "*"
-      },
-      {
-        name                       = "App-GW-Inbound-Https"
-        priority                   = 101
-        direction                  = "Inbound"
-        access                     = "Allow"
-        protocol                   = "Tcp"
-        source_port_range          = "*"
-        destination_port_range     = "443"
-        source_address_prefix      = "*"
-        destination_address_prefix = "*"
-      },
-      {
-        name                       = "App-GW-Inbound-Custom-Ports"
-        priority                   = 102
-        direction                  = "Inbound"
-        access                     = "Allow"
-        protocol                   = "Tcp"
-        source_port_range          = "*"
-        destination_port_ranges    = ["8089", "30066", "30077", "8090"]
+        destination_port_range     = "*"
         source_address_prefix      = "*"
         destination_address_prefix = "*"
       }
+
     ]
     tags = {
       environment = "dev"
@@ -297,14 +168,14 @@ subnet_info = [
     }
   },
   {
-    name                 = "ApplicationGatewaySubnet"
+    name                 = "subnet-appgw-001"
     virtual_network_name = "vnet-dev-spoke-001"
     address_space        = ["10.2.5.0/24"]
     location             = "eastus"
     nsg_rules = [
       {
         name                       = "AllowAppgatewayInbound"
-        priority                   = 100
+        priority                   = 500
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
@@ -315,7 +186,7 @@ subnet_info = [
       },
       {
         name                       = "AllowAppgatewayOutbound"
-        priority                   = 100
+        priority                   = 511
         direction                  = "Outbound"
         access                     = "Allow"
         protocol                   = "Tcp"
@@ -326,7 +197,7 @@ subnet_info = [
       },
       {
         name                       = "App-GW-Inbound-Https"
-        priority                   = 101
+        priority                   = 501
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
@@ -336,13 +207,13 @@ subnet_info = [
         destination_address_prefix = "*"
       },
       {
-        name                       = "App-GW-Inbound-Custom-Ports"
-        priority                   = 102
+        name                       = "Allow-Inbound-Internal-Traffic"
+        priority                   = 502
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
         source_port_range          = "*"
-        destination_port_ranges    = ["8089", "30066", "30077", "8090"]
+        destination_port_range     = "*"
         source_address_prefix      = "*"
         destination_address_prefix = "*"
       }
@@ -353,20 +224,31 @@ subnet_info = [
     }
   },
   {
-    name                 = "snet-spokevnet001-sqlmi-001"
+    name                 = "subnet-sqlmi-001"
     virtual_network_name = "vnet-dev-spoke-001"
     address_space        = ["10.2.6.0/24"]
     location             = "eastus"
     nsg_rules = [
       {
         name                       = "allow_tds_inbound"
-        priority                   = 1000
+        priority                   = 600
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
         source_port_range          = "*"
         destination_port_range     = "1433"
         source_address_prefix      = "VirtualNetwork"
+        destination_address_prefix = "*"
+      },
+      {
+        name                       = "Allow-Inbound-Internal-Traffic"
+        priority                   = 601
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "*"
+        source_address_prefix      = "*"
         destination_address_prefix = "*"
       }
     ]
@@ -380,30 +262,30 @@ subnet_info = [
 
 vnet_peering_info = [
   {
-    name                      = "hub001todevspoke001"
+    name                      = "dev-hub-001-to-dev-spoke-001"
     resource_group_name       = "rg-dev-hub-001"
     virtual_network_name      = "vnet-dev-hub-001"
     remote_virtual_network_id = "vnet-dev-spoke-001"
   },
   {
-    name                      = "devspoke001tohub001"
+    name                      = "dev-spoke-001-to-dev-hub-001"
     resource_group_name       = "rg-dev-spoke-001"
     virtual_network_name      = "vnet-dev-spoke-001"
     remote_virtual_network_id = "vnet-dev-hub-001"
   }
 ]
 
-bastion_host_info = [
-  {
-    name                 = "spokebastionhost"
-    resource_group_name  = "rg-dev-spoke-001"
-    virtual_network_name = "vnet-dev-spoke-001"
-    tags = {
-      environment = "dev"
-      project     = "demo-001"
-    }
-  }
-]
+# bastion_host_info = [
+#   {
+#     name                 = "dev-bastion-host-01"
+#     resource_group_name  = "rg-dev-spoke-001"
+#     virtual_network_name = "vnet-dev-spoke-001"
+#     tags = {
+#       environment = "dev"
+#       project     = "demo-001"
+#     }
+#   }
+# ]
 
 upload_to_storage_account_info = [
   {
@@ -444,12 +326,12 @@ data_disks = [
 
 windows_virtual_machine_info = [
   {
-    name                 = "vm-dev-web-001"
-    resource_group_name  = "rg-dev-spoke-001"
-    virtual_network_name = "vnet-dev-spoke-001"
-    subnet_name          = "snet-spokevnet001-web-tier-001"
-    vm_size              = "Standard_B2s"
-    admin_username       = "vmadmin"
+    name                        = "vm-dev-tcdw001"
+    resource_group_name         = "rg-dev-spoke-001"
+    virtual_network_name        = "vnet-dev-spoke-001"
+    subnet_name                 = "subnet-web-tier-001"
+    vm_size                     = "Standard_B2s"
+    admin_username              = "vmadmin"
     private_ip_address          = "10.2.1.5"
     user_assigned_identity_name = "vm-dev-web-001"
     key_vault_info = {
@@ -464,7 +346,7 @@ windows_virtual_machine_info = [
     source_image_reference = {
       publisher = "MicrosoftWindowsServer"
       offer     = "WindowsServer"
-      sku       = "2019-Datacenter"
+      sku       = "2022-Datacenter"
       version   = "latest"
     }
     # ext_settings = {
@@ -479,12 +361,12 @@ windows_virtual_machine_info = [
     }
   },
   {
-    name                 = "vm-dev-ent-001"
-    resource_group_name  = "rg-dev-spoke-001"
-    virtual_network_name = "vnet-dev-spoke-001"
-    subnet_name          = "snet-spokevnet001-ent-tier-001"
-    vm_size              = "Standard_B2s"
-    admin_username       = "vmadmin"
+    name                        = "vm-dev-tcda001"
+    resource_group_name         = "rg-dev-spoke-001"
+    virtual_network_name        = "vnet-dev-spoke-001"
+    subnet_name                 = "subnet-ent-tier-001"
+    vm_size                     = "Standard_B2s"
+    admin_username              = "vmadmin"
     private_ip_address          = "10.2.2.5"
     user_assigned_identity_name = "vm-dev-ent-001"
     key_vault_info = {
@@ -499,7 +381,7 @@ windows_virtual_machine_info = [
     source_image_reference = {
       publisher = "MicrosoftWindowsServer"
       offer     = "WindowsServer"
-      sku       = "2019-Datacenter"
+      sku       = "2022-Datacenter"
       version   = "latest"
     }
     # ext_settings = {
@@ -514,12 +396,12 @@ windows_virtual_machine_info = [
     }
   },
   {
-    name                 = "vm-dev-ent-002"
-    resource_group_name  = "rg-dev-spoke-001"
-    virtual_network_name = "vnet-dev-spoke-001"
-    subnet_name          = "snet-spokevnet001-ent-tier-001"
-    vm_size              = "Standard_B2s"
-    admin_username       = "vmadmin"
+    name                        = "vm-dev-tcdv001"
+    resource_group_name         = "rg-dev-spoke-001"
+    virtual_network_name        = "vnet-dev-spoke-001"
+    subnet_name                 = "subnet-ent-tier-001"
+    vm_size                     = "Standard_B2s"
+    admin_username              = "vmadmin"
     private_ip_address          = "10.2.2.6"
     user_assigned_identity_name = "vm-dev-ent-002"
     key_vault_info = {
@@ -534,7 +416,7 @@ windows_virtual_machine_info = [
     source_image_reference = {
       publisher = "MicrosoftWindowsServer"
       offer     = "WindowsServer"
-      sku       = "2019-Datacenter"
+      sku       = "2022-Datacenter"
       version   = "latest"
     }
     # ext_settings = {
@@ -555,7 +437,7 @@ windows_virtual_machine_info = [
 #     name                 = "vm-dev-ansible-001"
 #     resource_group_name  = "rg-dev-spoke-001"
 #     virtual_network_name = "vnet-dev-spoke-001"
-#     subnet_name          = "snet-spokevnet001-web-tier-001"
+#     subnet_name          = "subnet-web-tier-001"
 #     vm_size              = "Standard_B2s"
 #     admin_username       = "vmadmin"
 #     private_ip_address = "10.2.1.6"
@@ -916,7 +798,7 @@ storage_account_with_ep_info = [
     account_tier             = "Standard"
     account_replication_type = "LRS"
     virtual_network_name     = "vnet-dev-spoke-001"
-    subnet_name              = "snet-spokevnet001-pvendpoint-001"
+    subnet_name              = "subnet-pvendpoint-001"
     tags = {
       environment = "dev"
       project     = "demo-001"

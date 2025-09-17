@@ -24,7 +24,7 @@ variable "application_gateway_info" {
     backend_address_pool = list(object({
       name = string
       #fqdns = list(string)
-      ip_addresses = list(string)
+      ip_addresses = list(string) ##list(string) ipconfig1 additional nic
     }))
     vm_nic = map(object({
       network_interface_name = string
@@ -100,7 +100,7 @@ variable "application_gateway_info" {
     #   destination_address_prefixes = optional(list(string))
     #   destination_port_ranges      = optional(list(string))
     # }))
-    
+
     # route = list(object({
     #   name                   = string
     #   address_prefix         = string

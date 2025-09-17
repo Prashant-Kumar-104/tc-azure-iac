@@ -11,7 +11,7 @@ locals {
 
 resource "azurerm_network_security_group" "nsg" {
   count = local.object_enable ? 1 : 0
-  name                = "${var.name}-nsg"
+  name                = "nsg-${var.name}"
   location            = var.location
   resource_group_name = var.resource_group_name
 
