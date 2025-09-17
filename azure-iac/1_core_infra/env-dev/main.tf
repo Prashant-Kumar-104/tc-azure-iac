@@ -1,3 +1,5 @@
+## Resource Group
+
 module "resource_group" {
   source   = "../modules/resourcegroup"
   for_each = { for resourcegroup in var.resource_group_info : resourcegroup.name => resourcegroup }
@@ -6,6 +8,8 @@ module "resource_group" {
   location = each.value.location
   tags     = each.value.tags
 }
+
+## Virtual Network 
 
 module "virtual_network" {
   source   = "../modules/virtualnetwork"
@@ -20,6 +24,8 @@ module "virtual_network" {
   depends_on = [module.resource_group]
 }
 
+## Subnet
+
 module "subnet" {
   source   = "../modules/subnet"
   for_each = { for subnet in var.subnet_info : subnet.name => subnet }
@@ -33,6 +39,8 @@ module "subnet" {
   depends_on           = [module.virtual_network]
 }
 
+## VNet Peering
+
 module "vnet_peering" {
   source   = "../modules/vnetpeering"
   for_each = { for vnetpeering in var.vnet_peering_info : vnetpeering.name => vnetpeering }
@@ -44,6 +52,8 @@ module "vnet_peering" {
 
   depends_on = [module.virtual_network, module.subnet]
 }
+
+## Upload to Storage Account
 
 module "upload_to_storage_account" {
   source   = "../modules/uploadtostorageaccount"
@@ -58,17 +68,8 @@ module "upload_to_storage_account" {
   depends_on               = [module.vnet_peering]
 }
 
-# module "bastion_host" {
-#   source   = "../modules/bastion"
-#   for_each = { for bastion in var.bastion_host_info : bastion.name => bastion }
 
-#   name                 = each.value.name
-#   resource_group_name  = each.value.resource_group_name
-#   location             = module.resource_group[each.value.resource_group_name].resourcegroupinfo.location
-#   virtual_network_name = each.value.virtual_network_name
-#   tags                 = each.value.tags
-#   depends_on           = [module.subnet]
-# }
+## Windows Virtual Machine
 
 module "windows_virtual_machine" {
   source   = "../modules/windowsvirtualmachine"
@@ -100,7 +101,7 @@ module "windows_virtual_machine" {
   source_image_reference = {
     publisher = each.value.source_image_reference.publisher #"MicrosoftWindowsServer"
     offer     = each.value.source_image_reference.offer     #"WindowsServer"
-    sku       = each.value.source_image_reference.sku       #"2019-Datacenter"
+    sku       = each.value.source_image_reference.sku       #"2022-Datacenter"
     version   = each.value.source_image_reference.version   #"latest"
   }
 
@@ -108,6 +109,8 @@ module "windows_virtual_machine" {
   tags       = each.value.tags
   depends_on = [module.subnet, module.upload_to_storage_account, module.key_vault]
 }
+
+## Private DNS Zone
 
 module "private_dns_zone" {
   source   = "../modules/privatednszone"
@@ -118,6 +121,8 @@ module "private_dns_zone" {
   virtual_network_name = each.value.virtual_network_name
   depends_on           = [module.windows_virtual_machine]
 }
+
+## Storage Account with Endpoint
 
 module "storage_account_with_ep" {
   source   = "../modules/storageaccountwithep"
@@ -134,6 +139,8 @@ module "storage_account_with_ep" {
   tags                     = each.value.tags
   depends_on               = [module.windows_virtual_machine, module.private_dns_zone]
 }
+
+## Key Vault
 
 module "key_vault" {
   source                               = "../modules/keyvault"
@@ -153,7 +160,22 @@ module "key_vault" {
   depends_on = [module.resource_group, module.upload_to_storage_account]
 }
 
+## Bastion Host
 
+# module "bastion_host" {
+#   source   = "../modules/bastion"
+#   for_each = { for bastion in var.bastion_host_info : bastion.name => bastion }
+
+#   name                 = each.value.name
+#   resource_group_name  = each.value.resource_group_name
+#   location             = module.resource_group[each.value.resource_group_name].resourcegroupinfo.location
+#   virtual_network_name = each.value.virtual_network_name
+#   tags                 = each.value.tags
+#   depends_on           = [module.subnet]
+# }
+
+
+## Linux Virtual Machine
 
 # module "linux_virtual_machine" {
 #   source   = "../modules/linuxvirtualmachine"
